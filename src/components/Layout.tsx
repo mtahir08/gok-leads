@@ -11,6 +11,7 @@ import {
   AppBar,
   Avatar,
   Box,
+  Divider,
   Drawer,
   IconButton,
   List,
@@ -18,6 +19,8 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
   Toolbar,
   Tooltip,
   Typography,
@@ -48,6 +51,7 @@ const Layout: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [avatarAnchor, setAvatarAnchor] = useState<null | HTMLElement>(null);
   const location = useLocation();
   const { auth } = useAuth();
   const { logout } = useAuthActions();
@@ -221,6 +225,7 @@ const Layout: React.FC = () => {
           }}
         >
           <Avatar
+            src={auth?.profile}
             sx={{
               width: 32,
               height: 32,
@@ -310,6 +315,30 @@ const Layout: React.FC = () => {
         </Drawer>
       )}
 
+      {/* Avatar dropdown menu */}
+      <Menu
+        anchorEl={avatarAnchor}
+        open={Boolean(avatarAnchor)}
+        onClose={() => setAvatarAnchor(null)}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        slotProps={{ paper: { sx: { mt: 1, minWidth: 200 } } }}
+      >
+        <Box sx={{ px: 2, py: 1.5 }}>
+          <Typography variant='body2' fontWeight={600} noWrap>
+            {auth?.name || 'User'}
+          </Typography>
+          <Typography variant='caption' color='text.secondary' noWrap>
+            {auth?.role}
+          </Typography>
+        </Box>
+        <Divider />
+        <MenuItem onClick={() => { setAvatarAnchor(null); logout(); }} sx={{ gap: 1.5, color: 'error.main' }}>
+          <LogoutIcon fontSize='small' />
+          Sign out
+        </MenuItem>
+      </Menu>
+
       {/* Main content area */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Mobile top bar */}
@@ -327,10 +356,54 @@ const Layout: React.FC = () => {
               <Typography variant='subtitle1' fontWeight={700} sx={{ flex: 1 }}>
                 GOK Leads
               </Typography>
-              <Tooltip title='Sign out' arrow>
-                <IconButton size='small' onClick={logout} sx={{ color: 'text.secondary' }}>
-                  <LogoutIcon fontSize='small' />
-                </IconButton>
+              <Tooltip title={auth?.name || 'User'} arrow>
+                <Avatar
+                  src={auth?.profile}
+                  onClick={(e) => setAvatarAnchor(e.currentTarget)}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: 'primary.main',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {getInitials(auth?.name)}
+                </Avatar>
+              </Tooltip>
+            </Toolbar>
+          </AppBar>
+        )}
+
+        {/* Desktop top bar */}
+        {!isMobile && (
+          <AppBar
+            position='static'
+            color='transparent'
+            elevation={0}
+            sx={{ borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}
+          >
+            <Toolbar sx={{ justifyContent: 'flex-end', minHeight: '52px !important' }}>
+              <Tooltip title={auth?.name || 'User'} arrow>
+                <Avatar
+                  src={auth?.profile}
+                  onClick={(e) => setAvatarAnchor(e.currentTarget)}
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    bgcolor: 'primary.main',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'box-shadow 0.15s ease',
+                    '&:hover': {
+                      boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.25)}`,
+                    },
+                  }}
+                >
+                  {getInitials(auth?.name)}
+                </Avatar>
               </Tooltip>
             </Toolbar>
           </AppBar>
