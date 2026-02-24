@@ -1,4 +1,5 @@
 import {
+  CameraAlt as CameraAltIcon,
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
   Description as DescriptionIcon,
@@ -31,6 +32,7 @@ import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../Hooks/useAuth';
 import { useAuthActions } from '../Hooks/useAuthActions';
+import { ProfilePictureDialog } from './ProfilePictureDialog';
 
 const SIDEBAR_WIDTH = 240;
 const SIDEBAR_COLLAPSED = 64;
@@ -49,6 +51,7 @@ const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [avatarAnchor, setAvatarAnchor] = useState<null | HTMLElement>(null);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const location = useLocation();
   const { auth } = useAuth();
   const { logout } = useAuthActions();
@@ -119,9 +122,15 @@ const Layout: React.FC = () => {
       {/* User */}
       <Box sx={{ px: 1, py: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: mini ? 0.5 : 1.5, py: 1, borderRadius: 2, bgcolor: 'action.hover', justifyContent: mini ? 'center' : 'flex-start' }}>
-          <Avatar src={auth?.profile} sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
-            {getInitials(auth?.name)}
-          </Avatar>
+          <Tooltip title='Update profile picture' arrow>
+            <Avatar
+              src={auth?.profile}
+              onClick={() => setProfileDialogOpen(true)}
+              sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0, cursor: 'pointer', '&:hover': { opacity: 0.8 } }}
+            >
+              {getInitials(auth?.name)}
+            </Avatar>
+          </Tooltip>
           {!mini && (
             <>
               <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -179,6 +188,10 @@ const Layout: React.FC = () => {
           <Typography variant='caption' color='text.secondary' noWrap>{auth?.role}</Typography>
         </Box>
         <Divider />
+        <MenuItem onClick={() => { setAvatarAnchor(null); setProfileDialogOpen(true); }} sx={{ gap: 1.5 }}>
+          <CameraAltIcon fontSize='small' />
+          Update Picture
+        </MenuItem>
         <MenuItem onClick={() => { setAvatarAnchor(null); logout(); }} sx={{ gap: 1.5, color: 'error.main' }}>
           <LogoutIcon fontSize='small' />
           Sign out
@@ -210,6 +223,13 @@ const Layout: React.FC = () => {
           <Outlet />
         </Box>
       </Box>
+
+      <ProfilePictureDialog
+        open={profileDialogOpen}
+        onClose={() => setProfileDialogOpen(false)}
+        currentPicture={auth?.profile}
+        userName={auth?.name}
+      />
     </Box>
   );
 };
