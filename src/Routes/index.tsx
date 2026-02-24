@@ -1,8 +1,10 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Documents from '../Pages/Documents';
+import ForcedResetPass from '../Pages/ForcedResetPass';
 import ForgotPass from '../Pages/ForgotPass';
 import Login from '../Pages/Login';
 import PdfToExcel from '../Pages/PdfToExcel';
+import ResetPass from '../Pages/ResetPass';
 import ProtectedRoutes from './ProtectedRoutes';
 import PublicRoutes from './PublicRoutes';
 
@@ -14,6 +16,8 @@ function App() {
         <Route path='/' element={<PublicRoutes />}>
           <Route path='' element={<Login />} />
           <Route path='forgot-password' element={<ForgotPass />} />
+          <Route path='reset-password' element={<ResetPass />} />
+          <Route path='reset' element={<ForcedResetPass />} />
           <Route path='*' element={<Navigate to='/' />} />
         </Route>
 

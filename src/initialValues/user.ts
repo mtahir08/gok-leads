@@ -7,3 +7,9 @@ export const userInitialValues: Omit<IUser, '_id' | 'profile'> = {
   role: UserRole.Member,
   department: Department.Engineering,
 };
+
+export const resetPassInitialValues = {
+  email: '',
+  tempPass: '',
+  password: '',
+};
